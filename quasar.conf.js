@@ -42,7 +42,7 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        API: API_LOCAL, // API_PRODUCTION | API_LOCAL
+        API: API_PRODUCTION, // API_PRODUCTION | API_LOCAL
       },
       vueRouterMode: "history", // available values: 'hash', 'history'
 
@@ -91,7 +91,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ["Dialog", "Loading"],
+      plugins: ["Dialog", "Loading", "Notify"],
     },
 
     // animations: 'all', // --- includes all animations

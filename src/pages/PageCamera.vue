@@ -9,6 +9,7 @@
       <q-btn
         v-if="hasCameraSupport"
         @click="captureImage"
+        :disable="imageCaptured"
         color="grey-10"
         icon="eva-camera"
         size="lg"
@@ -28,7 +29,7 @@
       </q-file>
     </div>
     <div class="row justify-center q-pa-md">
-      <q-input v-model="caption" class="col col-sm-6" label="Caption" dense />
+      <q-input v-model="caption" class="col col-sm-6" label="Caption *" dense />
     </div>
     <div class="row justify-center q-pa-md">
       <q-input
@@ -51,19 +52,32 @@
       </q-input>
     </div>
     <div class="row justify-center q-mt-lg">
-      <q-btn @click="addPost" color="primary" label="Post Image" rounded unelevated />
+      <q-btn
+        @click="addPost"
+        :disable="!photo || !caption"
+        color="primary"
+        label="Post Image"
+        rounded
+        unelevated
+      />
     </div>
+    <!-- <div>
+      <q-btn @click="routeTest" color="primary" label="test" rounded unelevated />
+    </div> -->
   </q-page>
 </template>
 
 <script>
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { uid, useQuasar } from 'quasar'
 import axios from 'axios'
 require('md-gum-polyfill')
 export default defineComponent({
   name: 'PageCamera',
   setup() {
+    const router = useRouter()
+    const route = useRoute()
     const $q = useQuasar()
     let id = ref(uid())
     let caption = ref('')
@@ -134,29 +148,36 @@ export default defineComponent({
         })
       }
     }
+    // let routeTest = () => {
+    //   router.replace(route.query.redirect || { name: 'home' }, () => {})
+    // }
     let addPost = () => {
-      let post = {
-        id: id.value,
-        caption: caption.value,
-        location: location.value,
-        photo: photo.value,
-        date: date.value,
-      }
       let formData = new FormData()
       formData.append('id', id.value)
       formData.append('caption', caption.value)
       formData.append('location', location.value)
       formData.append('date', date.value)
       formData.append('file', photo.value, id.value + '.png')
+      $q.loading.show({ message: 'Sending Post' })
       axios
         .post(`${process.env.API}/createPost`, formData)
         .then((resp) => {
-          console.log(resp)
+          router.replace(route.query.redirect || { name: 'home' }, () => {})
+          $q.notify({
+            message: 'Post Created',
+            actions: [
+              {
+                label: 'Dismiss',
+                color: 'white',
+              },
+            ],
+          })
+          $q.loading.hide()
         })
         .catch((err) => {
-          console.log(err)
+          $q.loading.hide()
+          errorDialog('create your post')
         })
-      console.log('post', post)
     }
     let getLocation = () => {
       locLoading.value = true
@@ -251,6 +272,7 @@ export default defineComponent({
       captureImage,
       captureImageFallback,
       getLocation,
+      // routeTest,
     }
   },
 })
