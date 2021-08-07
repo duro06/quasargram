@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "deploy": "heroku builds:create -a quasargram-backend-andi"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "busboy": "^0.3.1",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.11.0",
+    "nodemon": "^2.0.12"
   }
 }

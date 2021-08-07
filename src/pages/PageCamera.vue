@@ -51,7 +51,7 @@
       </q-input>
     </div>
     <div class="row justify-center q-mt-lg">
-      <q-btn @click="postImage" color="primary" label="Post Image" rounded unelevated />
+      <q-btn @click="addPost" color="primary" label="Post Image" rounded unelevated />
     </div>
   </q-page>
 </template>
@@ -104,7 +104,7 @@ export default defineComponent({
       photo.value = dataURItoBlob(canvas.value.toDataURL())
       disableCamera()
       // console.log('video', video.value)
-      console.log('photo', photo.value)
+      // console.log('photo', photo.value)
     }
     let captureImageFallback = (apem) => {
       photo.value = apem
@@ -134,7 +134,7 @@ export default defineComponent({
         })
       }
     }
-    let postImage = () => {
+    let addPost = () => {
       let post = {
         id: id.value,
         caption: caption.value,
@@ -142,6 +142,20 @@ export default defineComponent({
         photo: photo.value,
         date: date.value,
       }
+      let formData = new FormData()
+      formData.append('id', id.value)
+      formData.append('caption', caption.value)
+      formData.append('location', location.value)
+      formData.append('date', date.value)
+      formData.append('file', photo.value, id.value + '.png')
+      axios
+        .post(`${process.env.API}/createPost`, formData)
+        .then((resp) => {
+          console.log(resp)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
       console.log('post', post)
     }
     let getLocation = () => {
@@ -191,7 +205,7 @@ export default defineComponent({
     }
     onMounted(() => {
       initCamera()
-      console.log(locationSupported.value)
+      // console.log(locationSupported.value)
     })
     onBeforeUnmount(() => {
       if (hasCameraSupport) {
@@ -225,7 +239,7 @@ export default defineComponent({
     return {
       caption,
       location,
-      postImage,
+      addPost,
       video,
       canvas,
       photo,
